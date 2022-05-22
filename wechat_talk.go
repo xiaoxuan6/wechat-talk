@@ -23,12 +23,12 @@ const (
 	msgTypeFile     = "file"
 )
 
-type robot struct {
+type Robot struct {
 	Key string `json:"key"`
 }
 
-func NewRobot(key string) *robot {
-	return &robot{
+func NewRobot(key string) *Robot {
+	return &Robot{
 		Key: key,
 	}
 }
@@ -44,7 +44,7 @@ type text struct {
 	MentionedMobileList []string `json:"mentioned_mobile_list" describe:"手机号列表，提醒手机号对应的群成员(@某个成员)，@all表示提醒所有人"`
 }
 
-func (r *robot) SendText(content string, mentionedList, mentionedMobileList []string) error {
+func (r *Robot) SendText(content string, mentionedList, mentionedMobileList []string) error {
 	return r.send(&textMessage{
 		MsgType: msgTypeText,
 		Text: text{
@@ -64,7 +64,7 @@ type markdown struct {
 	Content string `json:"content" describe:"markdown内容，最长不超过4096个字节，必须是utf8编码"`
 }
 
-func (r *robot) SendMarkdown(content string) error {
+func (r *Robot) SendMarkdown(content string) error {
 	return r.send(&markdownMessage{
 		MsgType: msgTypeMarkdown,
 		Markdown: markdown{
@@ -84,7 +84,7 @@ type image struct {
 }
 
 // SendImage 注：图片（base64编码前）最大不能超过2M，支持JPG,PNG格式
-func (r *robot) SendImage(base64, md5 string) error {
+func (r *Robot) SendImage(base64, md5 string) error {
 	return r.send(&imageMessage{
 		MsgType: msgTypeImage,
 		Image: image{
@@ -110,7 +110,7 @@ type Articles struct {
 	PicUrl      string `json:"picurl" describe:"图文消息的图片链接，支持JPG、PNG格式，较好的效果为大图 1068*455，小图150*150。"`
 }
 
-func (r *robot) SendNews(articles []Articles) error {
+func (r *Robot) SendNews(articles []Articles) error {
 	return r.send(&newsMessage{
 		MsgType: msgTypeNews,
 		News: news{
@@ -128,7 +128,7 @@ type file struct {
 	MediaId string `json:"media_id" describe:"文件id，通过下文的文件上传接口获取"`
 }
 
-func (r *robot) SendFile(mediaId string) error {
+func (r *Robot) SendFile(mediaId string) error {
 	return r.send(&fileMessage{
 		MsgType: msgTypeFile,
 		File: file{
@@ -137,7 +137,7 @@ func (r *robot) SendFile(mediaId string) error {
 	})
 }
 
-func (r *robot) send(msg interface{}) (err error) {
+func (r *Robot) send(msg interface{}) (err error) {
 
 	body, er := json.Marshal(msg)
 	if er != nil {
@@ -174,7 +174,7 @@ var (
 // UploadFile 素材上传得到media_id，该media_id仅三天内有效
 // media_id只能是对应上传文件的机器人可以使用
 // 要求文件大小在5B~20M之间
-func (r *robot) UploadFile(filename string, file io.Reader) (string, error) {
+func (r *Robot) UploadFile(filename string, file io.Reader) (string, error) {
 	url := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=%s&type=file", r.Key)
 
 	body := new(bytes.Buffer)
